@@ -1,0 +1,30 @@
+version: '3.3'
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=checklist
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=.a1s2d3
+    ports:
+      - 5432:5432
+    volumes:
+      - ./db/postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+    - PGADMIN_DEFAULT_EMAIL=ivanoff21@gmail.com
+    - PGADMIN_DEFAULT_PASSWORD=a1s2d3
+    ports:
+      - 5050:80
+
+  redis:
+    image: 'bitnami/redis:latest'
+    environment:
+      - REDIS_PASSWORD=redis123
+    volumes:
+      - ./cache/redis_data:/bitnami/redis/data
+    ports:
+      - 7000:7000

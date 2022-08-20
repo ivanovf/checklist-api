@@ -102,3 +102,11 @@ dist
 
 # TernJS port file
 .tern-port
+
+### VisualStudioCode ###
+.vscode/
+.editorconfig
+*.code-workspace
+
+
+postgres_data
