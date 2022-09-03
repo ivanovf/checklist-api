@@ -25,7 +25,22 @@ const routes = [
     methods: {
       'POST': {
         roles: [
-          roles.anonymous
+          roles.anonymous,
+          roles.authenticated,
+          roles.administrator,
+        ]
+      },
+    }
+  },
+  {
+    id: 'logout',
+    path: '/logout',
+    methods: {
+      'GET': {
+        roles: [
+          roles.anonymous,
+          roles.authenticated,
+          roles.administrator,
         ]
       },
     }

@@ -7,7 +7,7 @@ class Auth {
 
   constructor(secret) {
     this.secret = secret;
-    this.role = null;
+    this.session = null;
 	}
 
   async getAuth(userName, password) {
@@ -39,7 +39,7 @@ class Auth {
 	}
 
   sign(data) {
-    return jwt.sign(data, this.secret);
+    return jwt.sign(data, this.secret, { expiresIn: 60 * 60 * 24 });
   }
 
   validateToken() {
@@ -51,7 +51,7 @@ class Auth {
         try {
           const data = jwt.verify(token, this.secret);
           if (data) {
-            this.role = data?.role;
+            this.session = data;
             next();
           }
         } catch (error) {
@@ -67,10 +67,7 @@ class Auth {
   hasPermissions(method, routeRoles) {
     return (req, res, next) => {
 
-      const currentRole = this.role || 'anonymous';
-
-      console.log(routeRoles[method].roles);
-      console.log(currentRole);
+      const currentRole = this.session?.role || 'anonymous';
 
       if (routeRoles[method]) {
         const hasRole = routeRoles[method].roles.find(r => r.id == currentRole);

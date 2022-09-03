@@ -27,4 +27,4 @@ services:
     volumes:
       - ./cache/redis_data:/bitnami/redis/data
     ports:
-      - 7000:7000
+      - 6379:6379

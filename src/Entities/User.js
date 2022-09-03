@@ -1,5 +1,6 @@
 const { models } = require('../../db/sequelize');
 const boom = require('@hapi/boom');
+const crypt = require('bcrypt');
 
 class User {
   constructor() {
@@ -9,13 +10,12 @@ class User {
 	async create(data) {
 		try {
 			data.password = await crypt.hash(data.password, 5);
-			
 			console.log(data);
 			return await this.model.create(data);
 			
 		} catch (error) {
-			boom.badData('No all data was provided.');
-			return null;
+			boom.badData(error);
+			return error;
 		}
 	}
 
@@ -47,8 +47,18 @@ class User {
 	}
 
 	async find() {
-		const rta = await this.model.findAll();
-		return rta;
+		const res = await this.model.findAll();
+		let ret = [];
+		res.forEach(e => {
+			ret.push({
+				id: e.id, 
+				email: e.email,
+				role: e.role
+			})
+			
+		});
+
+		return ret;
 	}
 
 	async delete(id) {

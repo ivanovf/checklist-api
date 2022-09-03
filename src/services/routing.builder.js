@@ -1,9 +1,8 @@
 const express = require('express');
+const cors = require('cors');
 const EntityManager = require('./entity.manager');
 const validatorHandler = require('./../middlewares/validator.handler');
 const authenticatorManager = require('./auth.manager');
-const cache = require('./redis.manager');
-const { string } = require('joi');
 
 
 const routingBuilder = function(app, routes, roles, config) {
@@ -11,6 +10,7 @@ const routingBuilder = function(app, routes, roles, config) {
   const appRoutes = routes;
   const router = express.Router();
   app.use(express.json());
+  app.use(cors());
 
   const entityManager = new EntityManager();
   const authManager = new authenticatorManager(config.secret);
@@ -42,6 +42,21 @@ const routingBuilder = function(app, routes, roles, config) {
 
       app.use(route.path, router);
     }
+    else if(route.id == 'logout') {
+      router.get('/logout',
+        async (req, res, next) => {
+          try {
+            await authManager.logOut();
+            res.status(200).json({message: 'User unlogged.'});
+          }
+          catch (error) {
+            next(error);
+          }
+        }
+      );
+
+      app.use(route.path, router);
+    }
     else {
       appRoutes[i].router = express.Router();
       const entity = entityManager.getStorage(route.entity);
@@ -52,9 +67,6 @@ const routingBuilder = function(app, routes, roles, config) {
         async (req, res, next) => {
           try {
             const items = await entity.find();
-            await cache.set(`${route.entity}:list`, JSON.stringify(items));
-            //const data = await cache.get(`${route.entity}:list`);
-            console.log(data);
             res.status(200).json(items);
           }
           catch (error) {
